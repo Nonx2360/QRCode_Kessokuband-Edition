@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Generator Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-950 text-slate-200 font-sans min-h-screen flex items-center justify-center p-4 transition-all duration-700 ease-in-out bg-cover bg-center bg-no-repeat bg-fixed">
+
+    <!-- Glass Card -->
+    <div
+        class="w-full max-w-md bg-slate-900/70 backdrop-blur-xl backdrop-saturate-150 border border-white/10 rounded-2xl shadow-2xl overflow-hidden ring-1 ring-black/5">
+
+        <!-- Header -->
+        <div class="p-8 pb-6 border-b border-white/10">
+            <h2 class="text-2xl font-bold text-white tracking-tight drop-shadow-sm">QR Generator</h2>
+            <p class="text-slate-300 text-sm mt-1 font-medium">Create professional QR codes instantly.</p>
+        </div>
+
+        <div class="p-8 pt-6 space-y-6">
+            <!-- URL Input -->
+            <div>
+                <label class="block text-sm font-medium text-slate-200 mb-2 drop-shadow-sm">Target URL</label>
+                <div class="relative">
+                    <input type="text" id="urlInput" placeholder="https://example.com"
+                        class="w-full pl-4 pr-4 py-3 bg-slate-950/50 border border-white/10 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm">
+                </div>
+            </div>
+
+            <!-- Logo Upload -->
+            <div>
+                <label class="block text-sm font-medium text-slate-200 mb-2 drop-shadow-sm">Logo (Optional)</label>
+                <div class="relative group">
+                    <input type="file" id="logoInput" accept="image/*" class="block w-full text-sm text-slate-400
+                        file:mr-4 file:py-2.5 file:px-4
+                        file:rounded-lg file:border-0
+                        file:text-sm file:font-semibold
+                        file:bg-brand-600 file:text-white
+                        hover:file:bg-brand-500
+                        cursor-pointer bg-slate-950/50 border border-white/10 rounded-lg backdrop-blur-sm
+                        focus:outline-none focus:ring-2 focus:ring-brand-500 transition-all duration-200
+                        ">
+                </div>
+                <p class="text-xs text-slate-400 mt-1">Logo will be centered automatically.</p>
+            </div>
+
+            <!-- Color Pickers -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-200 mb-2 drop-shadow-sm">QR Color</label>
+                    <div
+                        class="flex items-center bg-slate-950/50 border border-white/10 rounded-lg p-2 px-3 backdrop-blur-sm">
+                        <input type="color" id="colorPickerQRCode" value="#000000"
+                            class="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 mr-3">
+                        <span class="text-xs text-slate-300 font-mono">Pick Color</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-200 mb-2 drop-shadow-sm">Background</label>
+                    <div
+                        class="flex items-center bg-slate-950/50 border border-white/10 rounded-lg p-2 px-3 backdrop-blur-sm">
+                        <input type="color" id="colorPickerBackground" value="#ffffff"
+                            class="w-8 h-8 rounded cursor-pointer bg-transparent border-none p-0 mr-3">
+                        <span class="text-xs text-slate-300 font-mono">Pick Color</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generate Button -->
+            <button id="generateBtn"
+                class="w-full bg-brand-600 hover:bg-brand-500 text-white font-semibold py-3.5 rounded-lg transition-all duration-200 shadow-lg shadow-brand-600/20 active:scale-[0.98] border border-transparent hover:border-brand-400">
+                Generate QR Code
+            </button>
+
+            <!-- Result Area -->
+            <div id="qrCodeContainer" class="hidden flex-col items-center animate-fade-in">
+                <div class="p-4 bg-white rounded-xl shadow-inner border border-slate-200 mt-2">
+                    <div id="qrCode"></div>
+                </div>
+
+                <button id="saveButton"
+                    class="mt-6 w-full bg-slate-800/80 hover:bg-slate-700/90 text-slate-200 font-medium py-3 rounded-lg border border-white/10 transition-all duration-200 flex items-center justify-center gap-2 backdrop-blur-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Download PNG
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-slate-950/30 p-4 text-center border-t border-white/10 backdrop-blur-md">
+            <a href="https://nonx2360.github.io/About-Me/" target="_blank"
+                class="text-xs text-slate-400 hover:text-brand-400 transition-colors font-medium">
+                Designed by Nonx2
+            </a>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const urlInput = document.getElementById('urlInput');
+        const logoInput = document.getElementById('logoInput');
+        const generateBtn = document.getElementById('generateBtn');
+        const qrCodeDiv = document.getElementById('qrCode');
+        const qrCodeContainer = document.getElementById('qrCodeContainer');
+        const saveButton = document.getElementById('saveButton');
+        const colorPickerQRCode = document.getElementById('colorPickerQRCode');
+        const colorPickerBackground = document.getElementById('colorPickerBackground');
+
+        let logoDataUrl = null;
+
+        // Wallpaper Logic
+        const wallpapers = [
+            "103933948_p0.png",
+            "110511101_p0.png",
+            "6p5a0sd - Imgur.png",
+            "AVyR2l5 - Imgur.png",
+            "Ah5UWYk - Imgur.png",
+            "EEUz3nQ - Imgur.png",
+            "FlejdRr - Imgur.png",
+            "SznRcf7 - Imgur.png",
+            "hjkoaP9 - Imgur.png",
+            "lrLlWw6 - Imgur.png",
+            "nF6XkWx - Imgur.png",
+            "wallpaper22.png",
+            "wallpaper27.png",
+            "wallpaper28 (1).png",
+            "wallpaper31.png",
+            "wallpaper33 (2).png",
+            "wallpaper34 (1).png",
+            "wallpaper41.png",
+            "wallpaper42 (1).png",
+            "wallpaper45 (2).png",
+            "y2kqxMD - Imgur.png"
+        ];
+
+        function setRandomWallpaper() {
+            const randomWallpaper = wallpapers[Math.floor(Math.random() * wallpapers.length)];
+            document.body.style.backgroundImage = `url('Wallpaper/${randomWallpaper}')`;
+        }
+
+        // Initialize
+        setRandomWallpaper();
+
+        // Set default colors
+        colorPickerQRCode.value = "#000000";
+        colorPickerBackground.value = "#ffffff";
+
+        // Handle Logo Upload
+        logoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    logoDataUrl = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                logoDataUrl = null;
+            }
+        });
+
+        generateBtn.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+            const qrCodeColor = colorPickerQRCode.value;
+            const backgroundColor = colorPickerBackground.value;
+
+            if (url) {
+                // Clear previous QR code
+                qrCodeDiv.innerHTML = '';
+
+                // Generate new QR code
+                // We use a slightly larger size to ensure quality when adding logo
+                const qrSize = 250;
+                new QRCode(qrCodeDiv, {
+                    text: url,
+                    width: qrSize,
+                    height: qrSize,
+                    colorDark: qrCodeColor,
+                    colorLight: backgroundColor,
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+
+                // Show container
+                qrCodeContainer.classList.remove('hidden');
+                qrCodeContainer.classList.add('flex');
+
+                // Smooth scroll
+                qrCodeContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                // Add Logo if exists
+                if (logoDataUrl) {
+                    // Wait for QR code canvas to be ready
+                    setTimeout(() => {
+                        const canvas = qrCodeDiv.querySelector('canvas');
+                        if (canvas) {
+                            const ctx = canvas.getContext('2d');
+                            const logoImg = new Image();
+                            logoImg.src = logoDataUrl;
+
+                            logoImg.onload = () => {
+                                // Calculate logo size (max 20% of QR size)
+                                const logoMaxSize = qrSize * 0.20;
+                                let logoWidth = logoImg.width;
+                                let logoHeight = logoImg.height;
+
+                                // Maintain aspect ratio
+                                if (logoWidth > logoHeight) {
+                                    if (logoWidth > logoMaxSize) {
+                                        logoHeight *= logoMaxSize / logoWidth;
+                                        logoWidth = logoMaxSize;
+                                    }
+                                } else {
+                                    if (logoHeight > logoMaxSize) {
+                                        logoWidth *= logoMaxSize / logoHeight;
+                                        logoHeight = logoMaxSize;
+                                    }
+                                }
+
+                                const x = (qrSize - logoWidth) / 2;
+                                const y = (qrSize - logoHeight) / 2;
+
+                                // Optional: Draw a white background behind the logo for better visibility
+                                // ctx.fillStyle = backgroundColor;
+                                // ctx.fillRect(x - 2, y - 2, logoWidth + 4, logoHeight + 4);
+
+                                ctx.drawImage(logoImg, x, y, logoWidth, logoHeight);
+
+                                // Update the img tag that qrcode.js created
+                                const img = qrCodeDiv.querySelector('img');
+                                if (img) {
+                                    img.src = canvas.toDataURL();
+                                }
+                            };
+                        }
+                    }, 50); // Small delay to ensure canvas is rendered
+                }
+
+            } else {
+                // Shake animation for error
+                urlInput.classList.add('ring-2', 'ring-red-500', 'border-red-500');
+                setTimeout(() => {
+                    urlInput.classList.remove('ring-2', 'ring-red-500', 'border-red-500');
+                }, 500);
+            }
+        });
+
+        saveButton.addEventListener('click', () => {
+            // We get the image from the div. 
+            // If logo was added, the img.src was updated with the canvas data.
+            const qrCodeImg = qrCodeDiv.querySelector('img');
+            if (qrCodeImg) {
+                const link = document.createElement('a');
+                link.download = 'qr_code_with_logo.png';
+                link.href = qrCodeImg.src;
+                link.click();
+            }
+        });
+    </script>
+</body>
+
+</html>
